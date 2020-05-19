@@ -53,4 +53,62 @@ export class GithubAPI extends API {
       `/repos/${user}/${repo}/commits?since=${since}&path=${path}`,
     )).json() as GithubCommitResponse[];
   }
+
+  public async getFileContent(
+    user: string,
+    repo: string,
+    path: string,
+  ): Promise<string> {
+    if (path.startsWith("/")) path = path.substring(1);
+
+    return (await (await this.fetch(`/repos/${user}/${repo}/contents/${path}`))
+    .json() as {content: string}).content;
+  }
+}
+
+export interface Commit {
+  author: string;
+  authorAvatarUrl: string;
+  message: string;
+  sha: string;
+}
+
+export class GithubService {
+  private readonly github: GithubAPI;
+  private readonly user: string;
+  private readonly repo: string;
+  private readonly path: string;
+
+  public constructor(
+    github: GithubAPI,
+    user: string,
+    repo: string,
+    path: string,
+  ) {
+    this.github = github;
+    this.user = user;
+    this.repo = repo;
+    this.path = path;
+  }
+
+  public async getAllCommits(since: string): Promise<Commit[]> {
+    return (await this.github.getAllCommits(
+      this.user,
+      this.repo,
+      this.path,
+      since,
+    )).map((c) =>
+      ({
+        author: c.author.login,
+        authorAvatarUrl: c.author.avatar_url,
+        message: c.commit.message,
+        sha: c.sha,
+        url: c.url,
+      }) as Commit
+    );
+  }
+
+  public async getFile(): Promise<any> {
+    return JSON.parse(atob(await this.github.getFileContent(this.user, this.repo, this.path)));
+  }
 }

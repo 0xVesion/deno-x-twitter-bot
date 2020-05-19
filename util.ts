@@ -9,3 +9,7 @@ export async function exists(path: string): Promise<boolean> {
     throw error;
   }
 }
+
+export function currentISODate(millis: number = Date.now()): string {
+  return new Date(millis).toISOString().split(".")[0] + "Z";
+}

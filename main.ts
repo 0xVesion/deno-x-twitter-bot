@@ -1,27 +1,35 @@
-import { GithubAPI } from "./github.ts";
+import { GithubAPI, GithubService } from "./github.ts";
+import { BotDatabase, DenoXEntryMap } from "./db.ts";
+import { currentISODate } from "./util.ts";
 
-const github = new GithubAPI();
-
-const commits = (await github.getAllCommits(
+const db = new BotDatabase();
+const githubAPI = new GithubAPI();
+const githubService = new GithubService(
+  githubAPI,
   "denoland",
   "deno_website2",
   "/database.json",
-  new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString().split(".")[0] + "Z",
-)).map((c) =>
-  ({
-    author: c.author.login,
-    authorAvatarUrl: c.author.avatar_url,
-    message: c.commit.message,
-    sha: c.sha,
-    url: c.url,
-  }) as Commit
 );
 
-interface Commit {
-  author: string;
-  authorAvatarUrl: string;
-  message: string;
-  sha: string;
-}
+const data = await db.get();
+await db.set(data);
 
-console.log(commits);
+const hasNewCommits =
+  (await githubService.getAllCommits(data.lastUpdate)).length > 0;
+
+if (!hasNewCommits) {
+  Deno.exit(0);
+} else {
+  const entries = Object.values(await githubService.getFile() as DenoXEntryMap);
+
+  const newEntries = entries.filter((e) =>
+    data.entries.filter((ee) => ee.owner === e.owner && ee.repo === e.repo)
+      .length === 0
+  );
+  console.log(newEntries);
+
+  data.entries = {...data.entries, ...newEntries};
+  data.lastUpdate = currentISODate();
+
+  await db.set(data);
+}

@@ -1,6 +1,6 @@
-import { GithubAPI, GithubService } from "./github.ts";
-import { BotDatabase, DenoXEntryMap, DenoXEntry } from "./db.ts";
-import { currentISODate } from "./util.ts";
+import { GithubAPI, GithubService } from "./src/github.ts";
+import { BotDatabase, DenoXEntryMap, DenoXEntry } from "./src/db.ts";
+import { currentISODate } from "./src/util.ts";
 
 const db = new BotDatabase();
 const githubAPI = new GithubAPI(Deno.env.get("BOT_GITHUB_TOKEN") || "");

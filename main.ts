@@ -1,5 +1,5 @@
 import { GithubAPI, GithubService } from "./github.ts";
-import { BotDatabase, DenoXEntryMap } from "./db.ts";
+import { BotDatabase, DenoXEntryMap, DenoXEntry } from "./db.ts";
 import { currentISODate } from "./util.ts";
 
 const db = new BotDatabase();
@@ -28,7 +28,7 @@ if (!hasNewCommits) {
   );
   console.log(newEntries);
 
-  data.entries = {...data.entries, ...newEntries};
+  data.entries = [...data.entries, ...newEntries];
   data.lastUpdate = currentISODate();
 
   await db.set(data);

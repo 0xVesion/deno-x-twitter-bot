@@ -3,7 +3,7 @@ import { BotDatabase, DenoXEntryMap, DenoXEntry } from "./db.ts";
 import { currentISODate } from "./util.ts";
 
 const db = new BotDatabase();
-const githubAPI = new GithubAPI();
+const githubAPI = new GithubAPI(Deno.env.get("BOT_GITHUB_TOKEN") || "");
 const githubService = new GithubService(
   githubAPI,
   "denoland",

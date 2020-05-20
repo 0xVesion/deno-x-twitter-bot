@@ -23,8 +23,9 @@ export interface GithubCommit {
 export class GithubAPI extends API {
   private readonly version: number;
 
-  public constructor(version: number = 3) {
-    super("https://api.github.com");
+  public constructor(authorization: string, version: number = 3) {
+    super("https://api.github.com", authorization ? `token ${authorization}` : "");
+
     this.version = version;
   }
 
@@ -32,15 +33,12 @@ export class GithubAPI extends API {
     path: string,
     init?: RequestInit,
   ): Promise<Response> {
-    if (!init) init = {};
-    if (!init.headers) init.headers = {};
-
-    init.headers = {
-      ...init.headers,
-      "Accept": `application/vnd.github.v${this.version}+json`,
-    };
-
-    return super.fetch(path, init);
+    return super.fetch(path, {
+      headers: {
+        Accept: `application/vnd.github.v${this.version}+json`,
+        ...(init?.headers || {}),
+      },
+    });
   }
 
   public async getAllCommits(
@@ -62,7 +60,7 @@ export class GithubAPI extends API {
     if (path.startsWith("/")) path = path.substring(1);
 
     return (await (await this.fetch(`/repos/${user}/${repo}/contents/${path}`))
-    .json() as {content: string}).content;
+      .json() as { content: string }).content;
   }
 }
 
@@ -109,6 +107,8 @@ export class GithubService {
   }
 
   public async getFile(): Promise<any> {
-    return JSON.parse(atob(await this.github.getFileContent(this.user, this.repo, this.path)));
+    return JSON.parse(
+      atob(await this.github.getFileContent(this.user, this.repo, this.path)),
+    );
   }
 }

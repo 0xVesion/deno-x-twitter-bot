@@ -1,4 +1,4 @@
-import { API } from "./api.ts";
+import { Api } from "./api.ts";
 
 export interface GithubCommitResponse {
   sha: string;
@@ -20,7 +20,7 @@ export interface GithubCommit {
   comment_count: number;
 }
 
-export class GithubAPI extends API {
+export class GithubApi extends Api {
   private readonly version: number;
 
   public constructor(authorization: string, version: number = 3) {
@@ -72,13 +72,13 @@ export interface Commit {
 }
 
 export class GithubService {
-  private readonly github: GithubAPI;
+  private readonly github: GithubApi;
   private readonly user: string;
   private readonly repo: string;
   private readonly path: string;
 
   public constructor(
-    github: GithubAPI,
+    github: GithubApi,
     user: string,
     repo: string,
     path: string,

@@ -1,8 +1,8 @@
-export abstract class API {
+export abstract class Api {
   private readonly baseUrl: string;
   private readonly authorization: string;
 
-  public constructor(baseUrl: string, authorization: string) {
+  public constructor(baseUrl: string, authorization: string = "") {
     this.baseUrl = baseUrl;
     this.authorization = authorization;
   }

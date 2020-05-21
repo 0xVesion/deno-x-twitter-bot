@@ -18,7 +18,11 @@ const data = await db.get();
 const hasNewCommits =
   (await githubService.getAllCommits(data.lastUpdate)).length > 0;
 
-if (!hasNewCommits) Deno.exit(0);
+if (!hasNewCommits) {
+  console.log("No new commits found!");
+
+  Deno.exit(0);
+}
 
 const entries = Object.values(await githubService.getFile() as DenoXEntryMap);
 

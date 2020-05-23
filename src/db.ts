@@ -27,6 +27,7 @@ export interface DenoXEntryMap {
 }
 
 export interface DenoXEntry {
+  name?: string;
   type: DenoXEntryType;
   owner: string;
   repo: string;

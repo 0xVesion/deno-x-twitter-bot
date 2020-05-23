@@ -24,7 +24,9 @@ if (!hasNewCommits) {
   Deno.exit(0);
 }
 
-const entries = Object.values(await githubService.getFile() as DenoXEntryMap);
+const entries: DenoXEntry[] = Object
+  .entries(await githubService.getFile() as DenoXEntryMap)
+  .map(([name, entry]) => ({ ...entry, name }));
 
 const newEntries = entries.filter((e) =>
   data.entries.filter((ee) => ee.owner === e.owner && ee.repo === e.repo)
@@ -34,9 +36,9 @@ const newEntries = entries.filter((e) =>
 console.log(`Found ${newEntries.length} new entries!`);
 
 for (const entry of newEntries) {
-  const { owner, repo, desc } = entry;
+  const { owner, repo, desc, name } = entry;
 
-  const tweetTitle = `${owner} added ${repo} to #denojs X`;
+  const tweetTitle = `${owner} added ${name} to #denojs X`;
 
   console.log(`Tweeting: ${tweetTitle}`);
 

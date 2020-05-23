@@ -44,7 +44,7 @@ for (const entry of newEntries) {
 
   const response = await ifttt.trigger(
     "tweet",
-    `${tweetTitle}\n${desc}\nYou can visit it on https://deno.land/x/${repo}\nhttps://github.com/${owner}/${repo}`,
+    `${tweetTitle}\n${desc}\nYou can visit it on https://deno.land/x/${name}\nhttps://github.com/${owner}/${repo}`,
   );
 
   console.log(response);

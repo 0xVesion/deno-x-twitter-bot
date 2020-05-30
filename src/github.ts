@@ -24,7 +24,10 @@ export class GithubApi extends Api {
   private readonly version: number;
 
   public constructor(authorization: string, version: number = 3) {
-    super("https://api.github.com", authorization ? `token ${authorization}` : "");
+    super(
+      "https://api.github.com",
+      authorization ? `token ${authorization}` : "",
+    );
 
     this.version = version;
   }
@@ -56,11 +59,14 @@ export class GithubApi extends Api {
     user: string,
     repo: string,
     path: string,
+    branch: string = "master",
   ): Promise<string> {
     if (path.startsWith("/")) path = path.substring(1);
 
-    return (await (await this.fetch(`/repos/${user}/${repo}/contents/${path}`))
-      .json() as { content: string }).content;
+    return (await fetch(
+      `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`,
+    ))
+      .json();
   }
 }
 
@@ -107,8 +113,6 @@ export class GithubService {
   }
 
   public async getFile(): Promise<any> {
-    return JSON.parse(
-      atob(await this.github.getFileContent(this.user, this.repo, this.path)),
-    );
+    return this.github.getFileContent(this.user, this.repo, this.path);
   }
 }

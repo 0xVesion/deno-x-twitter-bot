@@ -15,6 +15,11 @@ const githubService = new GithubService(
 
 
 while(true) {
+  try {
+    await run();
+  } catch(e) {
+    console.error(e);
+  }
 
   await new Promise((res, rej) => setTimeout(() => res(), 1000 * 60 * 15));
 }

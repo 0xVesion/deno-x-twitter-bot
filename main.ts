@@ -13,46 +13,54 @@ const githubService = new GithubService(
   "/database.json",
 );
 
-const data = await db.get();
 
-const hasNewCommits =
-  (await githubService.getAllCommits(data.lastUpdate)).length > 0;
+while(true) {
 
-if (!hasNewCommits) {
-  console.log("No new commits found!");
-
-  Deno.exit(0);
+  await new Promise((res, rej) => setTimeout(() => res(), 1000 * 60 * 15));
 }
 
-const entries: DenoXEntry[] = Object
-  .entries(await githubService.getFile() as DenoXEntryMap)
-  .map(([name, entry]) => ({ ...entry, name }));
+async function run(): Promise<void> {
+  const data = await db.get();
 
-const newEntries = entries.filter((e) =>
-  data.entries.filter((ee) => ee.owner === e.owner && ee.repo === e.repo)
-    .length === 0
-);
+  const hasNewCommits =
+    (await githubService.getAllCommits(data.lastUpdate)).length > 0;
 
-console.log(`Found ${newEntries.length} new entries!`);
+  if (!hasNewCommits) {
+    console.log("No new commits found!");
 
-for (const entry of newEntries) {
-  const { owner, repo, desc, name } = entry;
+    return;
+  }
 
-  const tweetTitle = `${owner} added ${name} to #denojs X`;
+  const entries: DenoXEntry[] = Object
+    .entries(await githubService.getFile() as DenoXEntryMap)
+    .map(([name, entry]) => ({ ...entry, name }));
 
-  console.log(`Tweeting: ${tweetTitle}`);
-
-  const response = await ifttt.trigger(
-    "tweet",
-    `${tweetTitle}\n${desc}\nYou can visit it on https://deno.land/x/${name}\nhttps://github.com/${owner}/${repo}`,
+  const newEntries = entries.filter((e) =>
+    data.entries.filter((ee) => ee.owner === e.owner && ee.repo === e.repo)
+      .length === 0
   );
 
-  console.log(response);
+  console.log(`Found ${newEntries.length} new entries!`);
 
-  await new Promise((r) => setTimeout(() => r(), 1000));
+  for (const entry of newEntries) {
+    const { owner, repo, desc, name } = entry;
+
+    const tweetTitle = `${owner} added ${name} to #denojs X`;
+
+    console.log(`Tweeting: ${tweetTitle}`);
+
+    const response = await ifttt.trigger(
+      "tweet",
+      `${tweetTitle}\n${desc}\nYou can visit it on https://deno.land/x/${name}\nhttps://github.com/${owner}/${repo}`,
+    );
+
+    console.log(response);
+
+    await new Promise((r) => setTimeout(() => r(), 1000));
+  }
+
+  data.entries = [...data.entries, ...newEntries];
+  data.lastUpdate = currentISODate();
+
+  await db.set(data);
 }
-
-data.entries = [...data.entries, ...newEntries];
-data.lastUpdate = currentISODate();
-
-await db.set(data);

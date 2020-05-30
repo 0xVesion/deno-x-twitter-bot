@@ -47,7 +47,7 @@ export interface BotData {
 
 export class BotDatabase extends Database<BotData> {
   constructor() {
-    super('.data.json');
+    super('data/.data.json');
   }
 
   public createDefault(): BotData {

@@ -7,9 +7,9 @@ build-amd64:
     - docker:19.03.11-dind
   script:
     - TAG="${CI_COMMIT_REF_NAME}-amd64"
-    - NAME="${CI_REGISTRY}/0xVesion/deno-x-twitter-bot"
+    - NAME="${CR_URL}/0xVesion/deno-x-twitter-bot"
     - IMAGE="${NAME}:${TAG}"
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $CR_USER -p $CR_DEPLOY_TOKEN $CR_URL
     - docker build -t  $IMAGE .
     - docker push $IMAGE
 

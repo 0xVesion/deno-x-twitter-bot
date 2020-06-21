@@ -1,0 +1,29 @@
+build-amd64:
+  image: docker:19.03.11
+  stage: build
+  tags:
+    - amd64
+  services:
+    - docker:19.03.11-dind
+  script:
+    - TAG="${CI_COMMIT_REF_NAME}-amd64"
+    - NAME="${CI_REGISTRY}/0xVesion/deno-x-twitter-bot"
+    - IMAGE="${NAME}:${TAG}"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t  $IMAGE .
+    - docker push $IMAGE
+
+build-arm64:
+  image: docker:19.03.11
+  stage: build
+  tags:
+    - arm64
+  services:
+    - docker:19.03.11-dind
+  script:
+    - TAG="${CI_COMMIT_REF_NAME}-arm64"
+    - NAME="${CI_REGISTRY}/0xVesion/deno-x-twitter-bot"
+    - IMAGE="${NAME}:${TAG}"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t  $IMAGE .
+    - docker push $IMAGE

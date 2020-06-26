@@ -5,9 +5,9 @@ build-amd64:
     - docker:19.03.11-dind
   script:
     - TAG="${CI_COMMIT_REF_NAME}-amd64"
-    - NAME="${CR_URL}/0xvesion/deno-x-twitter-bot"
+    - NAME="registry.gitlab.com/0xvesion/deno-x-twitter-bot"
     - IMAGE="${NAME}:${TAG}"
-    - docker login -u $CR_USER -p $CR_DEPLOY_TOKEN $CR_URL
+    - docker login -u $CR_USER -p $CR_DEPLOY_TOKEN registry.gitlab.com/0xvesion/deno-x-twitter-bot
     - docker build -t  $IMAGE .
     - docker push $IMAGE
 
@@ -20,8 +20,8 @@ build-arm64:
     - docker:19.03.11-dind
   script:
     - TAG="${CI_COMMIT_REF_NAME}-arm64"
-    - NAME="${CI_REGISTRY}/0xvesion/deno-x-twitter-bot"
+    - NAME="registry.gitlab.com/0xvesion/deno-x-twitter-bot"
     - IMAGE="${NAME}:${TAG}"
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.gitlab.com/0xvesion/deno-x-twitter-bot
     - docker build -t  $IMAGE .
     - docker push $IMAGE

@@ -1,8 +1,6 @@
 build-amd64:
   image: docker:19.03.11
   stage: build
-  services:
-    - docker:19.03.11-dind
   script:
     - TAG="${CI_COMMIT_REF_NAME}-amd64"
     - NAME="registry.gitlab.com/0xvesion/deno-x-twitter-bot"
@@ -16,8 +14,6 @@ build-arm64:
   stage: build
   tags:
     - arm64
-  services:
-    - docker:19.03.11-dind
   script:
     - TAG="${CI_COMMIT_REF_NAME}-arm64"
     - NAME="registry.gitlab.com/0xvesion/deno-x-twitter-bot"

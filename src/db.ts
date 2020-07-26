@@ -12,13 +12,11 @@ export abstract class Database<T> {
   public async get(): Promise<T> {
     if (!await exists(this.path)) return this.createDefault();
 
-    return JSON.parse(await Deno.readTextFile(this.path)) as T;
+    return JSON.parse(Deno.readTextFileSync(this.path)) as T;
   }
 
   public async set(entity: T): Promise<void> {
-    const entityString = new TextEncoder().encode(JSON.stringify(entity));
-
-    await Deno.writeFile(this.path, entityString);
+    Deno.writeTextFileSync(this.path, JSON.stringify(entity));
   }
 }
 
@@ -47,10 +45,10 @@ export interface BotData {
 
 export class BotDatabase extends Database<BotData> {
   constructor() {
-    super('data/.data.json');
+    super("data/.data.json");
   }
 
   public createDefault(): BotData {
-    return {entries: [], lastUpdate: currentISODate()};
+    return { entries: [], lastUpdate: currentISODate() };
   }
 }
